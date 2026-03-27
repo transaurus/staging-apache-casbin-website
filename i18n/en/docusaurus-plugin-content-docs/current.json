@@ -1,0 +1,58 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.docs.category.Basics": {
+    "message": "Basics",
+    "description": "The label for category 'Basics' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.Access Control Models": {
+    "message": "Access Control Models",
+    "description": "The label for category 'Access Control Models' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.RBAC": {
+    "message": "RBAC",
+    "description": "The label for category 'RBAC' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.MAC": {
+    "message": "MAC",
+    "description": "The label for category 'MAC' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.Storage": {
+    "message": "Storage",
+    "description": "The label for category 'Storage' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.Use Cases": {
+    "message": "Use Cases",
+    "description": "The label for category 'Use Cases' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.Plugins": {
+    "message": "Plugins",
+    "description": "The label for category 'Plugins' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.Middleware": {
+    "message": "Middleware",
+    "description": "The label for category 'Middleware' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.API": {
+    "message": "API",
+    "description": "The label for category 'API' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.Advanced Usage": {
+    "message": "Advanced Usage",
+    "description": "The label for category 'Advanced Usage' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.Management": {
+    "message": "Management",
+    "description": "The label for category 'Management' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.Editors & Tools": {
+    "message": "Editors & Tools",
+    "description": "The label for category 'Editors & Tools' in sidebar 'docs'"
+  },
+  "sidebar.docs.category.About & More": {
+    "message": "About & More",
+    "description": "The label for category 'About & More' in sidebar 'docs'"
+  }
+}

@@ -1,0 +1,25 @@
+---
+id: superadmin
+title: Super Administrator
+description: The Super Admin is the administrator of the entire system. It can be used in models such as RBAC, ABAC, and RBAC with domains. 
+keywords: [Super Admin]
+authors: [ErikQQY]
+---
+
+A **Super Admin** (e.g. `root`) is a subject that bypasses normal policy and always gets allow. You implement it in the **matcher** by adding a condition like `r.sub == "root"`. Example:
+
+```ini
+[request_definition]
+r = sub, obj, act
+
+[policy_definition]
+p = sub, obj, act
+
+[policy_effect]
+e = some(where (p.eft == allow))
+
+[matchers]
+m = r.sub == p.sub && r.obj == p.obj && r.act == p.act || r.sub == "root"
+```
+
+The matcher allows the request if either (1) it matches a policy rule, or (2) `r.sub == "root"`. So `root` is never denied. The same pattern works in RBAC, ABAC, or RBAC-with-domains: add `|| r.sub == "root"` (or your superuser name) to the matcher.

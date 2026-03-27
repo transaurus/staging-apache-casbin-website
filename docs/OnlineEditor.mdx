@@ -1,0 +1,57 @@
+---
+id: online-editor
+title: Online Editor
+description: Writing Casbin model and policy in a web browser
+keywords: [online editor, Casbin editor]
+authors: [hsluoyz]
+---
+
+The **[online editor](/editor)** lets you write and test Casbin models and policies in the browser, with syntax highlighting and completion.
+
+## Features
+
+### AI assistance
+
+Get suggestions and help while editing models and policies.
+
+![editor-ai](/img/editor-ai.png)
+
+### Engine selection
+
+Run enforcement with Go, Java, Node.js, Python, Rust, or .NET.
+
+![editor-engine](/img/editor-engine.png)
+
+### Multiple engines
+
+Switch implementations to check behavior across languages.
+
+![editor-multi-engine](/img/editor-multi-engine.png)
+
+### Custom endpoint
+
+Point the editor at your own Casbin service for live testing.
+
+![editor-endpoint](/img/editor-endpoint.png)
+
+### File upload
+
+Import existing model and policy files to start working immediately.
+
+![editor-upload](/img/editor-upload.png)
+
+### Use Custom Functions
+
+Add custom matching functions (for example, "RBAC with Patterns") by clicking the "Add Role Matching" button in the bottom left corner.
+
+![editor-tips](/img/editor-tips.png).
+
+To implement custom matching functions in your code, configure them through the Casbin API. See [RBAC with Pattern](/docs/rbac-with-pattern) for details.
+
+:::note
+
+The editor supports [Node-Casbin (Node.js)](https://github.com/casbin/node-casbin), [JCasbin (Java)](https://github.com/casbin/jcasbin), [Casbin (Go)](https://github.com/casbin/casbin), [Casbin-rs (Rust)](https://github.com/casbin/casbin-rs), [PyCasbin (Python)](https://github.com/casbin/pycasbin), and [Casbin.NET (C#)](https://github.com/casbin/Casbin.NET). Switch between implementations in the upper right corner to test your configuration.
+
+The editor validates models through a remote CLI. Results may vary slightly from your local environment due to implementation differences. Report any issues to the appropriate Casbin implementation repository.
+
+:::

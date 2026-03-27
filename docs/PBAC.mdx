@@ -1,0 +1,107 @@
+---
+id: pbac
+title: PBAC
+description: Policy-Based Access Control model in Casbin
+keywords:
+  [
+    pbac,
+    policy-based access control,
+    dynamic policies,
+    rule-based authorization,
+  ]
+authors: [casbin]
+---
+
+## What is PBAC?
+
+**PBAC (Policy-Based Access Control)** decides authorization from **rules stored in policy**, evaluated at runtime with `eval()`. Unlike fixed role or attribute checks, PBAC can express complex, context-dependent conditions.
+
+Policies can include:
+
+- **Dynamic expressions** — evaluated per request (e.g. `r.sub.Age >= 18`)
+- **Complex logic** — boolean and comparison operators, attribute access
+- **Context** — user, resource, and environment attributes
+- **Business rules** — domain-specific logic in policy
+
+## Model
+
+```ini
+[request_definition]
+r = sub, obj, act
+
+[policy_definition]
+p = sub_rule, obj_rule, act
+
+[policy_effect]
+e = some(where (p.eft == allow))
+
+[matchers]
+m = eval(p.sub_rule) && eval(p.obj_rule) && r.act == p.act
+```
+
+- `p.sub_rule` / `p.obj_rule` — expressions over the request (e.g. `r.sub.Age >= 18`, `r.obj.Level >= 1`)
+- `eval()` — evaluates these expressions at enforce time
+
+## Examples
+
+### Basic Policy
+
+**Policy:**
+
+```csv
+p, r.sub.Age >= 18, r.obj.Level >= 1, play
+```
+
+**Request Examples:**
+
+```text
+{"Age":25}, {"Level":2}, play    # ALLOWED (Age >= 18 and Level >= 1)
+{"Age":16}, {"Level":2}, play    # DENIED (Age < 18)
+{"Age":20}, {"Level":0}, play    # DENIED (Level < 1)
+{"Age":25}, {"Level":2}, read    # DENIED (action doesn't match policy)
+```
+
+### Complex Policy
+
+**Policy:**
+
+```csv
+p, r.sub.Department == "IT" && r.sub.Level >= 3, r.obj.Confidential == false, read
+```
+
+**Request Examples:**
+
+```text
+{"Department":"IT","Level":3}, {"Confidential":false}, read    # ALLOWED
+{"Department":"IT","Level":2}, {"Confidential":false}, read    # DENIED (Level < 3)
+{"Department":"HR","Level":3}, {"Confidential":false}, read    # DENIED (Department != "IT")
+{"Department":"IT","Level":3}, {"Confidential":true}, read     # DENIED (Confidential == true)
+```
+
+**Code Example:**
+
+```go
+e, _ := NewEnforcer("examples/pbac_model.conf", "examples/pbac_policy.csv")
+
+// Enable JSON request support
+e.EnableAcceptJsonRequest(true)
+
+// Define subject and object with attributes
+subject := `{"Department": "IT", "Level": 3}`
+object := `{"Confidential": false}`
+action := "read"
+
+// Check permission
+ok, err := e.Enforce(subject, object, action)
+if err != nil {
+    fmt.Printf("Enforcement error: %v\n", err)
+    return
+}
+if ok {
+    fmt.Println("Permission granted")
+} else {
+    fmt.Println("Permission denied")
+}
+```
+
+With `EnableAcceptJsonRequest(true)`, parameters that look like JSON (`{` or `[`) are parsed automatically; invalid JSON returns a clear error.

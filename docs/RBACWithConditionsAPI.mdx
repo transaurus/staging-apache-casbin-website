@@ -1,0 +1,85 @@
+---
+id: rbac-with-conditions-api
+title: RBAC with Conditions API
+description: A more user-friendly API for RBAC with conditions.
+keywords: [RBAC with conditions, API]
+authors: [PokIsemaine]
+---
+
+This page documents the API for [RBAC with conditions](/docs/rbac-with-conditions): attaching condition functions to user–role links so that a link is valid only when the condition returns true.
+
+## Reference
+
+### AddNamedLinkConditionFunc
+
+Registers a condition function for the user–role link `(userName, roleName)`. The link is considered valid only when the function returns true.
+
+```mdx-code-block
+<Tabs groupId="langs">
+<TabItem value="Go" label="Go" default>
+```
+
+```go
+e.AddNamedLinkConditionFunc("g", "userName", "roleName", YourLinkConditionFunc)
+```
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+### AddNamedDomainLinkConditionFunc
+
+Same as above for domain-scoped links: `(userName, roleName, domainName)`. The link is valid only when the condition function returns true.
+
+```mdx-code-block
+<Tabs groupId="langs">
+<TabItem value="Go" label="Go" default>
+```
+
+```go
+e.AddNamedDomainLinkConditionFunc("g", "userName", "roleName", "domainName", YourLinkConditionFunc)
+```
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+### SetNamedLinkConditionFuncParams
+
+Sets the parameters passed to the condition function for the link `(userName, roleName)`. Pass one or more string arguments.
+
+```mdx-code-block
+<Tabs groupId="langs">
+<TabItem value="Go" label="Go" default>
+```
+
+```go
+e.SetNamedLinkConditionFuncParams("g", "userName", "roleName", "YourConditionFuncParam")
+e.SetNamedLinkConditionFuncParams("g", "userName2", "roleName2", "YourConditionFuncParam_1", "YourConditionFuncParam_2")
+```
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+### SetNamedDomainLinkConditionFuncParams
+
+Sets the parameters passed to the condition function for the domain-scoped link `(userName, roleName, domainName)`.
+
+```mdx-code-block
+<Tabs groupId="langs">
+<TabItem value="Go" label="Go" default>
+```
+
+```go
+e.SetNamedDomainLinkConditionFuncParams("g", "userName", "roleName", "domainName", "YourConditionFuncParam")
+e.SetNamedDomainLinkConditionFuncParams("g", "userName2", "roleName2", "domainName2", "YourConditionFuncParam_1", "YourConditionFuncParam_2")
+```
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```

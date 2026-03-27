@@ -1,0 +1,103 @@
+---
+id: watchers
+title: Watchers
+description: Maintaining consistency between multiple Casbin enforcer instances
+keywords: [watcher, multiple Casbin enforcer, WatcherEx]
+authors: [hsluoyz]
+---
+
+**Watchers** keep policy in sync across multiple enforcer instances. When one enforcer updates policy, it notifies others (via a message bus such as [etcd](https://github.com/coreos/etcd), Redis, or Kafka), and they reload or update their in-memory policy. That lets you run many enforcers behind load balancers without stale permissions.
+
+Watchers are implemented in separate packages, like adapters. The list below covers supported backends. To add a new one, open an issue or PR.
+
+```mdx-code-block
+<Tabs groupId="langs">
+<TabItem value="Go" label="Go" default>
+
+import {WatcherDotNETData} from "@site/src/tableData/WatcherData/WatcherDotNETData"; import {
+  WatcherGoData
+} from "@site/src/tableData/WatcherData/WatcherGoData";
+import {WatcherJavaData} from "@site/src/tableData/WatcherData/WatcherJavaData";
+import WatcherMDTable from "@site/src/tableData/WatcherData/WatcherMDTable";
+import {WatcherNodejsData} from "@site/src/tableData/WatcherData/WatcherNodejsData";
+import {WatcherPhpData} from "@site/src/tableData/WatcherData/WatcherPhpData";
+import {WatcherPythonData} from "@site/src/tableData/WatcherData/WatcherPythonData";
+import {WatcherRubyData} from "@site/src/tableData/WatcherData/WatcherRubyData";
+import {WatcherRustData} from "@site/src/tableData/WatcherData/WatcherRustData";
+
+<WatcherMDTable data={WatcherGoData}></WatcherMDTable>
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Java" label="Java">
+
+<WatcherMDTable data={WatcherJavaData}></WatcherMDTable>
+  ```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Node.js" label="Node.js">
+
+<WatcherMDTable data={WatcherNodejsData}></WatcherMDTable>
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Python" label="Python">
+
+<WatcherMDTable data={WatcherPythonData}></WatcherMDTable>
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value=".NET" label=".NET">
+
+<WatcherMDTable data={WatcherDotNETData}></WatcherMDTable>
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Ruby" label="Ruby">
+
+<WatcherMDTable data={WatcherRubyData}></WatcherMDTable>
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="PHP" label="PHP">
+
+<WatcherMDTable data={WatcherPhpData}></WatcherMDTable>
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Rust" label="Rust">
+
+<WatcherMDTable data={WatcherRustData}></WatcherMDTable>
+```
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+## WatcherEx
+
+To support incremental synchronization between multiple instances, we provide the `WatcherEx` interface. This interface can notify other instances when policies change, though there is currently no implementation of `WatcherEx`. We recommend using a dispatcher to achieve this functionality.
+
+Compared to the `Watcher` interface, `WatcherEx` can distinguish the type of update action received, such as `AddPolicy` versus `RemovePolicy`.
+
+WatcherEx APIs:
+
+| API                                                                                           | Description                                                                                                                                                                                                                                                                                 |
+|-----------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| SetUpdateCallback(func(string)) error                                                         | SetUpdateCallback configures the callback function that the watcher calls when the policy in the database has been changed by other instances. A classic callback is Enforcer.LoadPolicy().                                                                                            |
+| Update() error                                                                                | Update calls the update callback of other instances to synchronize their policies. It is usually called after changing the policy in the database, such as after Enforcer.SavePolicy(), Enforcer.AddPolicy(), Enforcer.RemovePolicy(), etc.                                                                      |
+| Close()                                                                                       | Close stops and releases the watcher. The callback function will no longer be invoked after this.                                                                                                                                                                                                    |
+| UpdateForAddPolicy(sec, ptype string, params ...string) error                                 | UpdateForAddPolicy calls the update callback of other instances to synchronize their policies. It is called after a policy is added via Enforcer.AddPolicy(), Enforcer.AddNamedPolicy(), Enforcer.AddGroupingPolicy() and Enforcer.AddNamedGroupingPolicy().                                  |
+| UpdateForRemovePolicy(sec, ptype string, params ...string) error                              | UpdateForRemovePolicy calls the update callback of other instances to synchronize their policies. It is called after a policy is removed by Enforcer.RemovePolicy(), Enforcer.RemoveNamedPolicy(), Enforcer.RemoveGroupingPolicy() and Enforcer.RemoveNamedGroupingPolicy().                  |
+| UpdateForRemoveFilteredPolicy(sec, ptype string, fieldIndex int, fieldValues ...string) error | UpdateForRemoveFilteredPolicy calls the update callback of other instances to synchronize their policies. It is called after Enforcer.RemoveFilteredPolicy(), Enforcer.RemoveFilteredNamedPolicy(), Enforcer.RemoveFilteredGroupingPolicy() and Enforcer.RemoveFilteredNamedGroupingPolicy(). |
+| UpdateForSavePolicy(model model.Model) error                                                  | UpdateForSavePolicy calls the update callback of other instances to synchronize their policies. It is called after Enforcer.SavePolicy().                                                                                                                                      |
+| UpdateForAddPolicies(sec string, ptype string, rules ...[]string) error                       | UpdateForAddPolicies calls the update callback of other instances to synchronize their policies. It is called after Enforcer.AddPolicies(), Enforcer.AddNamedPolicies(), Enforcer.AddGroupingPolicies() and Enforcer.AddNamedGroupingPolicies().                                              |
+| UpdateForRemovePolicies(sec string, ptype string, rules ...[]string) error                    | UpdateForRemovePolicies calls the update callback of other instances to synchronize their policies. It is called after Enforcer.RemovePolicies(), Enforcer.RemoveNamedPolicies(), Enforcer.RemoveGroupingPolicies() and Enforcer.RemoveNamedGroupingPolicies().                              |

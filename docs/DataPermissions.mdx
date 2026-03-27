@@ -1,0 +1,51 @@
+---
+id: data-permissions
+title: Data Permissions
+description: Solutions for Data Permissions
+keywords: [Data Permissions, implicit]
+authors: [ErikQQY]
+---
+
+This page describes two ways to work with data-level permissions in Casbin: using **implicit** role/permission queries and using **batch enforcement**.
+
+### 1. Implicit roles and permissions
+
+When users get roles or permissions through the RBAC hierarchy (not only by direct policy rules), those are **implicit**. Use `GetImplicitRolesForUser()` and `GetImplicitPermissionsForUser()` to include them; `GetRolesForUser()` and `GetPermissionsForUser()` return only direct assignments. See [GitHub #137](https://github.com/casbin/casbin/issues/137).
+
+### 2. BatchEnforce()
+
+`BatchEnforce()` runs many access checks in one call and returns a slice of booleans. Use it to filter or validate data sets efficiently.
+
+Example:
+
+```mdx-code-block
+<Tabs groupId="langs">
+<TabItem value="Go" label="Go" default>
+```
+
+```go
+boolArray, err := e.BatchEnforce(requests)
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Node.js" label="Node.js">
+```
+
+```typescript
+const boolArray = await e.batchEnforce(requests);
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Java" label="Java">
+```
+
+```java
+List<Boolean> boolArray = e.batchEnforce(requests);
+```
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```

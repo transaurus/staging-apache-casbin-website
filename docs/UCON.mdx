@@ -1,0 +1,168 @@
+---
+id: ucon
+title: Usage Control (UCON)
+description: Usage Control Model in Casbin
+keywords:
+  [ucon, usage control, access control, authorization, obligations, conditions]
+authors: [nodece]
+---
+
+## Overview
+
+**UCON (Usage Control)** extends access control with **authorizations (A)**, **obligations (B)**, and **conditions (C)**. It supports **continuous** enforcement during use (not only at access time) and **mutable** attributes. Casbin does not implement UCON in the core; use the [casbin-ucon](https://github.com/casbin/casbin-ucon) extension for session-based usage control.
+
+## Model & Policy
+
+> **Note**: Casbin does not support UCON directly in its core library. Instead, UCON functionality is provided through the extension library [casbin-ucon](https://github.com/casbin/casbin-ucon), which adds session-based access control with conditions, obligations, and continuous monitoring capabilities. The extension can use the same models and policies supported by the Casbin core.
+
+### model
+
+```conf
+[request_definition]
+r = sub, obj, act
+
+[policy_definition]
+p = sub, obj, act
+
+[policy_effect]
+e = some(where (p.eft == allow))
+
+[matchers]
+m = r.sub == p.sub && r.obj == p.obj && r.act == p.act
+```
+
+### policy
+
+```csv
+p, alice, document1, read
+```
+
+> **Note**: In UCON, Conditions and Obligations are not written in policy.csv; they are added and managed in code through the casbin-ucon API.
+
+## Core components
+
+- **Authorizations (A)** — Access rules based on subject/object attributes (like standard Casbin).
+- **Obligations (B)** — Actions the subject must perform before or during use (e.g. log, confirm).
+- **Conditions (C)** — Environment or system state (e.g. time, location) that must hold.
+
+## Features
+
+- **Continuous enforcement** — Checks during the whole usage session, not only at entry.
+- **Mutability** — Attributes can change as a result of usage.
+- **Pre / ongoing / post** — Decisions and obligations at access time, during use, and after.
+
+## Use Cases
+
+The UCON model is particularly valuable in:
+
+- Digital Rights Management (DRM) systems
+- Healthcare information systems
+- Cloud computing environments
+- IoT device access control
+- Data sharing in collaborative environments
+- Financial systems with complex compliance requirements
+
+## Implementation with casbin-ucon
+
+To implement UCON in your Casbin-based application, use the [casbin-ucon](https://github.com/casbin/casbin-ucon) extension library:
+
+```bash
+go get github.com/casbin/casbin-ucon
+```
+
+```go
+// Import the required packages
+import (
+    "github.com/casbin/casbin/v3"
+    "github.com/casbin/casbin-ucon"
+    "fmt"
+    "time"
+)
+
+func main() {
+    // Create standard Casbin enforcer
+    e, _ := casbin.NewEnforcer("model.conf", "policy.csv")
+
+    // Wrap with UCON functionality
+    uconE := ucon.NewUconEnforcer(e)
+
+    // Add conditions
+    condition := &ucon.Condition{
+        ID:   "location_condition",
+        Name: "location",
+        Kind: "always",
+        Expr: "office",
+    }
+    uconE.AddCondition(condition)
+
+    // Add obligations
+    obligation := &ucon.Obligation{
+        ID:   "post_log",
+        Name: "access_logging",
+        Kind: "post",
+        Expr: "log_level:detailed",
+    }
+    uconE.AddObligation(obligation)
+
+    // Create a session
+    sessionID, _ := uconE.CreateSession("alice", "read", "document1", map[string]interface{}{
+        "location":      "office",
+        "log_level":     "detailed",
+    })
+
+    // UCON session-based enforcement
+    session, err := uconE.EnforceWithSession(sessionID)
+    if session == nil {
+        // refused
+        fmt.Println("session refused because: ", err)
+    }
+
+    // Monitor session status
+    go func() {
+        for {
+            if !session.IfActive() {
+                if session.GetStopReason() == ucon.NormalStopReason {
+                    break
+                }
+                //TODO
+                //decide how to handle session termination yourself
+                // For example, clean up resources, close connections, write logs, notify the frontend, etc.
+                fmt.Printf("%s %s %s is stopped because: %s\n",
+                          session.GetSubject(), session.GetAction(),
+                          session.GetObject(), session.GetStopReason())
+                break
+            }
+            time.Sleep(200 * time.Millisecond)
+        }
+    }()
+
+    // You can update attributes during the session
+    // session.UpdateAttribute("location", "home")
+
+    // Stop the session when done
+    _ = uconE.StopMonitoring(sessionID)
+}
+```
+
+## Implementation Notes
+
+- UCON encompasses traditional access control models like MAC, DAC, and RBAC
+- Implementation requires a reference monitor capable of continuous monitoring
+- Attribute updates (mutability) should be handled atomically to maintain consistency
+- Obligations may require integration with external monitoring systems
+- Conditions evaluation may depend on environmental factors outside the access control system
+- When using casbin-ucon, you need to properly manage session lifecycle and monitoring
+
+## Comparison with Traditional Models
+
+| Aspect               | Traditional Access Control | UCON                                        |
+| -------------------- | -------------------------- | ------------------------------------------- |
+| Decision Time        | Pre-access only            | Pre, ongoing, and post access               |
+| Attribute Mutability | Static                     | Dynamic (can change during usage)           |
+| Decision Factors     | Authorizations only        | Authorizations, obligations, and conditions |
+| Enforcement          | One-time check             | Continuous monitoring                       |
+| Revocation           | Explicit                   | Can be automatic based on attribute changes |
+
+## References
+
+For complete API documentation, detailed usage, and latest updates about casbin-ucon, refer to [casbin-ucon](https://github.com/casbin/casbin-ucon).

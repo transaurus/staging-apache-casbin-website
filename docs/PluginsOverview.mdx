@@ -1,0 +1,36 @@
+---
+id: plugins-overview
+title: Plugin Overview
+description: Casbin Plugins and Extensions Overview
+keywords: [plugins, extensions, adapters, watchers, middlewares]
+authors: [hsluoyz]
+---
+
+Casbin’s plugin ecosystem extends the core with storage backends, framework integrations, and distributed sync. Use plugins to connect Casbin to your database, message bus, or web framework.
+
+## Plugin categories
+
+| Category        | Purpose |
+|----------------|---------|
+| **Enforcers**  | Specialized enforcers for particular environments or use cases |
+| **Adapters**   | Connect to storage (databases, files, cloud) for model and policy |
+| **Watchers**   | Sync policy changes across multiple enforcer instances |
+| **Dispatchers**| Coordinate updates in distributed deployments |
+| **Role managers** | Custom role/hierarchy logic |
+| **Middlewares**| Integrations for Kong, GraphQL, and cloud-native stacks |
+
+## Why use plugins?
+
+- **Integrate** with your existing DB and infra
+- **Scale** to multiple instances with watchers and dispatchers
+- **Use** framework-specific middlewares (e.g. Nest.js, Gin)
+- **Run** in cloud-native and serverless setups
+
+## Getting started
+
+1. Choose the plugin type that fits your need (adapter, watcher, middleware, etc.).
+2. Install the package for your language.
+3. Configure it when creating or configuring the enforcer.
+4. See the plugin’s own docs for options and advanced usage.
+
+Use the sections in this category to find and configure each plugin type.

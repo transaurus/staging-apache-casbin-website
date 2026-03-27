@@ -1,0 +1,123 @@
+---
+id: rbac-with-pattern
+title: RBAC with Pattern
+description: RBAC with Pattern
+keywords: [RBAC with pattern, pattern matching]
+authors: [hsluoyz]
+---
+
+## Quick start
+
+- **Without domains** — Register a matching function for `g`:
+
+  ```go
+  e, _ := NewEnforcer("./example.conf", "./example.csv")
+  e.AddNamedMatchingFunc("g", "KeyMatch2", util.KeyMatch2)
+  ```
+
+- **With domains** — Use the domain-aware API:
+
+  ```go
+  e.AddNamedDomainMatchingFunc("g", "KeyMatch2", util.KeyMatch2)
+  ```
+
+- **Both** — Call both APIs if your model uses patterns in both user–role and domain matching.
+
+You must call these after creating the enforcer; they define how pattern matching is evaluated.
+
+:::note
+
+If using the online editor, add a pattern matching function by clicking the "Add Role Matching" button in the lower left corner.
+![editor-tips](/img/editor-tips.png)
+
+:::
+
+## How pattern matching works
+
+Pattern matching lets a **single** policy line match many subjects, objects, or domains (e.g. `/book/:id` matching `/book/1`, `/book/2`). The functions use the same signature as [matcher functions](/docs/function); you register them for the parameters of `g`.
+
+Example: without pattern matching you might write:
+
+```csv
+p, alice, book_group, read
+g, /book/1, book_group
+g, /book/2, book_group
+```
+
+So `alice` can read every book, but you need one `g` line per book. For many books, use a **pattern** instead:
+
+```csv
+g, /book/:id, book_group
+```
+
+Casbin then matches `/book/1`, `/book/2`, etc. to `/book/:id`. Register the matching function:
+
+```mdx-code-block
+<Tabs groupId="langs">
+<TabItem value="Go" label="Go" default>
+```
+
+```go
+e.AddNamedMatchingFunc("g", "KeyMatch2", util.KeyMatch2)
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Node.js" label="Node.js">
+```
+
+```typescript
+await e.addNamedMatchingFunc('g', Util.keyMatch2Func);
+```
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+For **domain** pattern matching (e.g. `g(r.sub, p.sub, r.dom)`), use:
+
+```mdx-code-block
+<Tabs groupId="langs">
+<TabItem value="Go" label="Go" default>
+```
+
+```go
+e.AddNamedDomainMatchingFunc("g", "KeyMatch2", util.KeyMatch2)
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Node.js" label="Node.js">
+```
+
+```typescript
+await e.addNamedDomainMatchingFunc('g', Util.keyMatch2Func);
+```
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+For the meaning of `g(r.sub, p.sub, r.dom)` see [RBAC with domains](/docs/rbac-with-domains). Full example: [model_test.go](https://github.com/casbin/casbin/blob/dbdb6cbe2e7a80863e4951f9ff36da07fef01b75/model_test.go#L278-L307).
+
+:::note
+
+Pattern matching with domains supports custom domain token names. Instead of `dom`, you can use any identifier like `tenant` or `workspace`. Casbin automatically detects the domain token name from your model definition when using pattern matching functions like `keyMatch`.
+
+:::
+
+**Domain wildcards:** you can use a wildcard in the domain position of `g` to grant a role in all domains. Example:
+
+```csv
+p, admin, domain1, data1, read
+p, admin, domain1, data1, write
+p, admin, domain2, data2, read
+p, admin, domain2, data2, write
+
+g, alice, admin, *
+g, bob, admin, domain2
+```
+
+So `alice` has the `admin` role in every domain (`*`), while `bob` is `admin` only in `domain2`. Pattern matching and domain wildcards keep policies short when you have many domains or resources.

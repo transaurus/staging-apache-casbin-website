@@ -1,0 +1,93 @@
+---
+id: menu-permissions
+title: Menu Permissions
+description: Example for Menu Permissions
+keywords: [Menu Permissions, example]
+authors: [amikecoXu]
+---
+
+This page shows a **Spring Boot** example that uses jCasbin for menu-based access control. The same pattern (policy + role assignments + menu hierarchy) can be applied in other languages supported by Casbin.
+
+### 1. Configuration
+
+Define role–menu permissions, user–role assignments, and menu hierarchy in `policy.csv`. Full example: [jCasbin menu permission](https://github.com/jcasbin/jcasbin-menu-permission).
+
+#### 1.1 Overview
+
+The policy file defines: (1) which roles can access which menu items, (2) which users have which roles, and (3) parent–child relationships between menu items. Together this gives role-based, hierarchical menu visibility.
+
+#### 1.2 Permission rules (p)
+
+Lines starting with `p` define whether a role (`sub`) may perform an action (`act`) on a menu item (`obj`). The effect (`eft`) is `allow` or `deny`.
+
+Examples:
+
+- `p, ROLE_ROOT, SystemMenu, read, allow` grants `ROLE_ROOT` read access to `SystemMenu`.
+- `p, ROLE_ROOT, UserMenu, read, deny` denies `ROLE_ROOT` read access to `UserMenu`.
+
+#### 1.3 User–role assignments (g)
+
+Lines starting with `g` assign users to roles and define role inheritance. Users get the union of permissions from all their roles.
+
+Examples:
+
+- `g, user, ROLE_USER` assigns the user named `user` to `ROLE_USER`.
+- `g, ROLE_ADMIN, ROLE_USER` makes `ROLE_ADMIN` inherit all permissions from `ROLE_USER`.
+
+#### 1.4 Menu hierarchy (g2)
+
+Lines starting with `g2` define parent–child menu structure.
+
+Examples:
+
+- `g2, UserSubMenu_allow, UserMenu` makes `UserSubMenu_allow` a child of `UserMenu`.
+- `g2, (NULL), SystemMenu` marks `SystemMenu` as a top-level menu with no parent.
+
+#### 1.5 Menu permission inheritance
+
+- If a **parent** menu has explicit `allow`, its **children** inherit `allow` unless a child has explicit `deny`. So allowing a parent allows its children.
+- If a parent has no explicit permission but at least one child has `allow`, the parent is treated as `allow` so users can reach that child.
+
+#### 1.6 Deny and role inheritance
+
+- **Explicit deny** wins: if a role is explicitly denied a menu, any role that inherits from it is also denied. Deny is not overridden by inheritance.
+- **Implicit deny** (no `allow` rule) is overridable: a more privileged role can add an explicit `allow` for that menu.
+
+#### 1.7 Example policy
+
+```csv
+p, ROLE_ROOT, SystemMenu, read, allow
+p, ROLE_ROOT, AdminMenu, read, allow
+p, ROLE_ROOT, UserMenu, read, deny
+p, ROLE_ADMIN, UserMenu, read, allow
+p, ROLE_ADMIN, AdminMenu, read, allow
+p, ROLE_ADMIN, AdminSubMenu_deny, read, deny
+p, ROLE_USER, UserSubMenu_allow, read, allow
+
+g, user, ROLE_USER
+g, admin, ROLE_ADMIN
+g, root, ROLE_ROOT
+g, ROLE_ADMIN, ROLE_USER
+
+g2, UserSubMenu_allow, UserMenu
+g2, UserSubMenu_deny, UserMenu
+g2, UserSubSubMenu, UserSubMenu_allow
+g2, AdminSubMenu_allow, AdminMenu
+g2, AdminSubMenu_deny, AdminMenu
+g2, (NULL), SystemMenu
+```
+
+| MenuName           | ROLE_ROOT | ROLE_ADMIN | ROLE_USER |
+|:-------------------|:---------:|:----------:|:---------:|
+| SystemMenu         |     ✅     |     ❌      |     ❌     |
+| UserMenu           |     ❌     |     ✅      |     ❌     |
+| UserSubMenu_allow  |     ❌     |     ✅      |     ✅     |
+| UserSubSubMenu     |     ❌     |     ✅      |     ✅     |
+| UserSubMenu_deny   |     ❌     |     ✅      |     ❌     |
+| AdminMenu          |     ✅     |     ✅      |     ❌     |
+| AdminSubMenu_allow |     ✅     |     ✅      |     ❌     |
+| AdminSubMenu_deny  |     ✅     |     ❌      |     ❌     |
+
+### 2. Enforcing menu permissions
+
+In the [jCasbin menu permission](https://github.com/jcasbin/jcasbin-menu-permission) example, [MenuService](https://github.com/jcasbin/jcasbin-menu-permission/blob/master/src/main/java/org/casbin/service/MenuService.java) provides `findAccessibleMenus()` (all menus a user can see) and `checkMenuAccess()` (check one menu). Both use the jCasbin enforcer under the hood.

@@ -1,0 +1,35 @@
+---
+id: policy-subset-loading
+title: Loading Policy Subsets
+description: Loading filtered policies
+keywords: [filtered policies, policy subset, performance optimization]
+authors: [hsluoyz]
+---
+
+Some [adapters](/docs/adapters) support **filtered policy loading**: only a subset of policies is loaded from storage according to a filter. That reduces memory and speed in large or multi-tenant setups where loading the full policy set is impractical.
+
+Call `LoadFilteredPolicy(filter)` with a supported adapter. The filter shape is adapter-specific. When using filtered loading, `SavePolicy()` is disabled so you don’t overwrite the full policy by mistake.
+
+Example: filtered file adapter with an RBAC-with-domains model. The filter loads only policies for `domain1`:
+
+```go
+import (
+    "github.com/casbin/casbin/v3"
+    fileadapter "github.com/casbin/casbin/v3/persist/file-adapter"
+)
+
+enforcer, _ := casbin.NewEnforcer()
+
+adapter := fileadapter.NewFilteredAdapter("examples/rbac_with_domains_policy.csv")
+enforcer.InitWithAdapter("examples/rbac_with_domains_model.conf", adapter)
+
+filter := &fileadapter.Filter{
+    P: []string{"", "domain1"},
+    G: []string{"", "", "domain1"},
+}
+enforcer.LoadFilteredPolicy(filter)
+
+// Only policies for "domain1" are loaded.
+```
+
+`LoadIncrementalFilteredPolicy(filter)` works like `LoadFilteredPolicy` but **adds** the filtered policies to the current in-memory policy instead of replacing it. You can combine several filtered loads (e.g. per tenant) into one enforcer.

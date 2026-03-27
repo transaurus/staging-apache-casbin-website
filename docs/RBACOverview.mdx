@@ -1,0 +1,27 @@
+---
+id: rbac-overview
+title: RBAC Overview
+description: Role-Based Access Control (RBAC) Overview
+keywords: [RBAC, role-based access control, overview]
+authors: [hsluoyz]
+---
+
+## Overview
+
+**Role-Based Access Control (RBAC)** assigns permissions to users according to their roles. Casbin implements RBAC with support for role hierarchies, domains, and conditions.
+
+## RBAC in Casbin
+
+- **Basic RBAC** — Role hierarchies and user–role assignments
+- **RBAC with pattern** — Pattern matching for flexible role assignment
+- **RBAC with domains** — Multi-tenancy with per-domain roles
+- **RBAC with conditions** — Conditional logic in role-based permissions
+- **RBAC96** — Alignment with the NIST RBAC96 model
+
+## Getting started
+
+1. Define the role hierarchy and request/policy shape in the [model](/docs/syntax-for-models).
+2. Assign users to roles (and optionally resources to roles) in [policy](/docs/policy-storage).
+3. Use the [RBAC API](/docs/rbac-api) to manage roles and check permissions.
+
+See the sections below for each variant and implementation details.

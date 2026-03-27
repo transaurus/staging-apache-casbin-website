@@ -1,0 +1,77 @@
+---
+id: policy-storage
+title: Policy Storage
+description: Policy Storage
+keywords: [policy storage]
+authors: [hsluoyz]
+---
+
+Policy storage in Casbin is handled by [adapters](/docs/adapters). The enforcer loads and (optionally) saves policy through the adapter API.
+
+## Loading policy from a CSV file
+
+Using a CSV file is the simplest option and works well for development and examples.
+
+Example: [examples/rbac_policy.csv](https://github.com/casbin/casbin/blob/master/examples/rbac_policy.csv)
+
+```csv
+p, alice, data1, read
+p, bob, data2, write
+p, data2_admin, data2, read
+p, data2_admin, data2, write
+g, alice, data2_admin
+```
+
+:::note
+If a field contains commas, wrap it in double quotes:
+
+```csv
+p, alice, "data1,data2", read    --correct
+p, alice, data1,data2, read        --incorrect (the whole phrase "data1,data2" should be wrapped in double quotes)
+```
+
+If a field contains both commas and double quotes, wrap it in double quotes and escape internal quotes by doubling them:
+
+```csv
+p, alice, data, "r.act in (""get"", ""post"")"        --correct
+p, alice, data, "r.act in ("get", "post")"            --incorrect (you should use "" to escape "")
+```
+
+See [casbin#886](https://github.com/casbin/casbin/issues/886).
+:::
+
+## Adapter API
+
+| Method                 | Type     | Description                                                |
+|------------------------|----------|------------------------------------------------------------|
+| LoadPolicy()           | basic    | Load all policy rules from the storage                     |
+| SavePolicy()           | basic    | Save all policy rules to the storage                       |
+| AddPolicy()            | optional | Add a policy rule to the storage                           |
+| RemovePolicy()         | optional | Remove a policy rule from the storage                      |
+| RemoveFilteredPolicy() | optional | Remove policy rules that match the filter from the storage |
+
+## Database Storage Format
+
+**Example policy (CSV)**
+
+```csv
+p, data2_admin, data2, read
+p, data2_admin, data2, write
+g, alice, admin
+```
+
+**Typical database layout (e.g. MySQL)**
+
+| id   | ptype | v0          | v1    | v2    | v3   | v4   | v5   |
+| ---- | ----- | ----------- | ----- | ----- | ---- | ---- | ---- |
+| 1    | p     | data2_admin | data2 | read  |      |      |      |
+| 2    | p     | data2_admin | data2 | write |      |      |      |
+| 3    | g     | alice       | admin |       |      |      |      |
+
+**Columns**
+
+- **id** — Primary key (adapter-specific; not part of Casbin policy).
+- **ptype** — Policy type: `p`, `g`, `g2`, etc.
+- **v0–v5** — Policy fields in order (left to right in CSV). Most adapters use 6 columns; some support more. Check the adapter docs if you need extra fields.
+
+For full adapter API and design details, see [Adapters](/docs/adapters).

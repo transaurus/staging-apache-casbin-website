@@ -1,0 +1,580 @@
+---
+id: adapters
+title: Adapters
+description: Supported adapters and usage
+keywords: [adapters, MySQL adapter, storage adapter]
+authors: [hsluoyz]
+---
+
+Casbin loads and saves policy through **adapters**. The enforcer calls `LoadPolicy()` to load rules and, when supported, `SavePolicy()` to persist them. Adapters are implemented in separate packages to keep the core library small.
+
+## Supported adapters
+
+Adapters by language are listed below. To add a third-party adapter, open an issue or PR.
+
+```mdx-code-block
+<Tabs groupId="langs">
+<TabItem value="Go" label="Go" default>
+
+import {AdapterDotNETData} from "@site/src/tableData/AdapterData/AdapterDotNETData";
+import {  AdapterGoData} from "@site/src/tableData/AdapterData/AdapterGoData";
+import {AdapterJavaData} from "@site/src/tableData/AdapterData/AdapterJavaData";
+import {AdapterLuaData} from "@site/src/tableData/AdapterData/AdapterLuaData";
+import AdapterMDTable from "@site/src/tableData/AdapterData/AdapterMDTable";
+import {AdapterNodejsData} from "@site/src/tableData/AdapterData/AdapterNodejsData";
+import {AdapterPhpData} from "@site/src/tableData/AdapterData/AdapterPhpData";
+import {AdapterPythonData} from "@site/src/tableData/AdapterData/AdapterPythonData";
+import {AdapterRubyData} from "@site/src/tableData/AdapterData/AdapterRubyData";
+import {AdapterRustData} from "@site/src/tableData/AdapterData/AdapterRustData";
+import {AdapterSwiftData} from "@site/src/tableData/AdapterData/AdapterSwiftData";
+
+<AdapterMDTable data={AdapterGoData}></AdapterMDTable>
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Java" label="Java">
+
+<AdapterMDTable data={AdapterJavaData}></AdapterMDTable>
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Node.js" label="Node.js">
+
+<AdapterMDTable data={AdapterNodejsData}></AdapterMDTable>
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="PHP" label="PHP">
+
+<AdapterMDTable data={AdapterPhpData}></AdapterMDTable>
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Python" label="Python">
+
+<AdapterMDTable data={AdapterPythonData}></AdapterMDTable>
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value=".NET" label=".NET">
+
+<AdapterMDTable data={AdapterDotNETData}></AdapterMDTable>
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Rust" label="Rust">
+
+<AdapterMDTable data={AdapterRustData}></AdapterMDTable>
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Ruby" label="Ruby">
+
+<AdapterMDTable data={AdapterRubyData}></AdapterMDTable>
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Swift" label="Swift">
+
+<AdapterMDTable data={AdapterSwiftData}></AdapterMDTable>
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Lua" label="Lua">
+
+<AdapterMDTable data={AdapterLuaData}></AdapterMDTable>
+```
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+:::note
+
+1. When you call `casbin.NewEnforcer()` with an adapter (explicit or implicit), policies load automatically.
+2. Call `e.LoadPolicy()` to refresh policies from storage.
+3. Without Auto-Save support, adapters cannot persist policy changes automatically when you modify policies. Call `SavePolicy()` manually to persist all rules.
+
+:::
+
+## Examples
+
+Several adapter usage examples follow:
+
+### File adapter (built-in)
+
+Initialize an enforcer using the built-in file adapter:
+
+```mdx-code-block
+<Tabs groupId="langs">
+<TabItem value="Go" label="Go" default>
+```
+
+```go
+import "github.com/casbin/casbin/v3"
+
+e := casbin.NewEnforcer("examples/basic_model.conf", "examples/basic_policy.csv")
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="PHP" label="PHP">
+```
+
+```php
+use Casbin\Enforcer;
+
+$e = new Enforcer('examples/basic_model.conf', 'examples/basic_policy.csv');
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Rust" label="Rust">
+```
+
+```rust
+use casbin::prelude::*;
+
+let mut e = Enforcer::new("examples/basic_model.conf", "examples/basic_policy.csv").await?;
+```
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+Equivalent alternative:
+
+```mdx-code-block
+<Tabs groupId="langs">
+<TabItem value="Go" label="Go" default>
+```
+
+```go
+import (
+    "github.com/casbin/casbin/v3"
+    fileadapter "github.com/casbin/casbin/v3/persist/file-adapter"
+)
+
+a := fileadapter.NewAdapter("examples/basic_policy.csv")
+e := casbin.NewEnforcer("examples/basic_model.conf", a)
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="PHP" label="PHP">
+```
+
+```php
+use Casbin\Enforcer;
+use Casbin\Persist\Adapters\FileAdapter;
+
+$a = new FileAdapter('examples/basic_policy.csv');
+$e = new Enforcer('examples/basic_model.conf', $a);
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Rust" label="Rust">
+```
+
+```rust
+use casbin::prelude::*;
+
+let a = FileAdapter::new("examples/basic_policy.csv");
+let e = Enforcer::new("examples/basic_model.conf", a).await?;
+```
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+### [MySQL adapter](https://github.com/casbin/mysql-adapter)
+
+Initialize an enforcer using a MySQL database connection at 127.0.0.1:3306 with root user and no password:
+
+```mdx-code-block
+<Tabs groupId="langs">
+<TabItem value="Go" label="Go" default>
+```
+
+```go
+import (
+    "github.com/casbin/casbin/v3"
+    "github.com/casbin/mysql-adapter"
+)
+
+a := mysqladapter.NewAdapter("mysql", "root:@tcp(127.0.0.1:3306)/")
+e := casbin.NewEnforcer("examples/basic_model.conf", a)
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Rust" label="Rust">
+```
+
+```rust
+// https://github.com/casbin-rs/diesel-adapter
+// make sure you activate feature `mysql`
+
+use casbin::prelude::*;
+use diesel_adapter::{ConnOptions, DieselAdapter};
+
+let mut conn_opts = ConnOptions::default();
+conn_opts
+    .set_hostname("127.0.0.1")
+    .set_port(3306)
+    .set_host("127.0.0.1:3306") // overwrite hostname, port config
+    .set_database("casbin")
+    .set_auth("casbin_rs", "casbin_rs");
+
+let a = DieselAdapter::new(conn_opts)?;
+let mut e = Enforcer::new("examples/basic_model.conf", a).await?;
+```
+
+```mdx-code-block
+</TabItem>
+<TabItem value="PHP" label="PHP">
+```
+
+```php
+// https://github.com/php-casbin/dbal-adapter
+
+use Casbin\Enforcer;
+use CasbinAdapter\DBAL\Adapter as DatabaseAdapter;
+
+$config = [
+    // Either 'driver' with one of the following values:
+    // pdo_mysql,pdo_sqlite,pdo_pgsql,pdo_oci (unstable),pdo_sqlsrv,pdo_sqlsrv,
+    // mysqli,sqlanywhere,sqlsrv,ibm_db2 (unstable),drizzle_pdo_mysql
+    'driver'     => 'pdo_mysql',
+    'host' => '127.0.0.1',
+    'dbname' => 'test',
+    'user' => 'root',
+    'password' => '',
+    'port' => '3306',
+];
+
+$a = DatabaseAdapter::newAdapter($config);
+$e = new Enforcer('examples/basic_model.conf', $a);
+```
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+## Use your own storage adapter
+
+Integrate a custom adapter:
+
+```go
+import (
+    "github.com/casbin/casbin/v3"
+    "github.com/your-username/your-repo"
+)
+
+a := yourpackage.NewAdapter(params)
+e := casbin.NewEnforcer("examples/basic_model.conf", a)
+```
+
+## Migrate/Convert between different adapter
+
+To migrate policies from adapter A to adapter B:
+
+1.Load policy from A to memory
+
+```go
+e, _ := NewEnforcer(m, A)
+```
+
+or
+
+```go
+e.SetAdapter(A)
+e.LoadPolicy()
+```
+
+2.Switch from adapter A to B
+
+```go
+e.SetAdapter(B)
+```
+
+3.Save policy from memory to B
+
+```go
+e.SavePolicy()
+```
+
+## Load/Save at run-time
+
+Reload models and policies or persist policy changes after initialization:
+
+```go
+// Reload the model from the model CONF file.
+e.LoadModel()
+
+// Reload the policy from file/database.
+e.LoadPolicy()
+
+// Save the current policy (usually after changed with Casbin API) back to file/database.
+e.SavePolicy()
+```
+
+## AutoSave
+
+Adapters with Auto-Save capability can persist individual policy changes directly to storage without a full save operation. This differs from `SavePolicy()`, which wipes storage and rewrites all policies, potentially causing performance issues with large policy sets.
+
+When an adapter supports Auto-Save, control this behavior via `Enforcer.EnableAutoSave()`. This option defaults to enabled for compatible adapters.
+
+:::note
+
+1. Auto-Save is an optional feature. Adapters may implement it or not.
+2. Auto-Save only functions when the enforcer's adapter supports it.
+3. Check the AutoSave column in the adapter list above to determine support.
+
+:::
+
+Auto-Save usage example:
+
+```go
+import (
+    "github.com/casbin/casbin/v3"
+    "github.com/casbin/xorm-adapter"
+    _ "github.com/go-sql-driver/mysql"
+)
+
+// AutoSave is enabled by default when using compatible adapters with enforcers.
+a := xormadapter.NewAdapter("mysql", "mysql_username:mysql_password@tcp(127.0.0.1:3306)/")
+e := casbin.NewEnforcer("examples/basic_model.conf", a)
+
+// Disable AutoSave.
+e.EnableAutoSave(false)
+
+// Policy changes affect only the in-memory enforcer,
+// not the storage.
+e.AddPolicy(...)
+e.RemovePolicy(...)
+
+// Enable AutoSave.
+e.EnableAutoSave(true)
+
+// Policy changes now persist to storage
+// in addition to updating the in-memory enforcer.
+e.AddPolicy(...)
+e.RemovePolicy(...)
+```
+
+Additional examples: [https://github.com/casbin/xorm-adapter/blob/master/adapter_test.go](https://github.com/casbin/xorm-adapter/blob/master/adapter_test.go)
+
+### How to write an adapter
+
+Implement the [Adapter](https://github.com/casbin/casbin/blob/master/persist/adapter.go) interface with at least two required methods: `LoadPolicy(model model.Model) error` and `SavePolicy(model model.Model) error`.
+
+Three optional methods enable Auto-Save support.
+
+| Method                 | Type      | Description                                                |
+|------------------------|-----------|------------------------------------------------------------|
+| LoadPolicy()           | mandatory | Load all policy rules from the storage                     |
+| SavePolicy()           | mandatory | Save all policy rules to the storage                       |
+| AddPolicy()            | optional  | Add a policy rule to the storage                           |
+| RemovePolicy()         | optional  | Remove a policy rule from the storage                      |
+| RemoveFilteredPolicy() | optional  | Remove policy rules that match the filter from the storage |
+
+:::note
+
+When an adapter lacks Auto-Save support, provide empty implementations for the three optional methods. Golang example:
+
+:::
+
+```go
+// AddPolicy adds a policy rule to the storage.
+func (a *Adapter) AddPolicy(sec string, ptype string, rule []string) error {
+    return errors.New("not implemented")
+}
+
+// RemovePolicy removes a policy rule from the storage.
+func (a *Adapter) RemovePolicy(sec string, ptype string, rule []string) error {
+    return errors.New("not implemented")
+}
+
+// RemoveFilteredPolicy removes policy rules that match the filter from the storage.
+func (a *Adapter) RemoveFilteredPolicy(sec string, ptype string, fieldIndex int, fieldValues ...string) error {
+    return errors.New("not implemented")
+}
+```
+
+Casbin enforcers ignore the "not implemented" error when calling these optional methods.
+
+Adapter implementation requirements:
+
+* Data Structure. Support reading at minimum six columns.
+* Database Name. Default to `casbin`.
+* Table Name. Default to `casbin_rule`.
+* Ptype Column. Name as `ptype` (not `p_type` or `Ptype`).
+* Table definition: `(id int primary key, ptype varchar, v0 varchar, v1 varchar, v2 varchar, v3 varchar, v4 varchar, v5 varchar)`.
+* Unique key index: Build on columns `ptype,v0,v1,v2,v3,v4,v5`.
+* `LoadFilteredPolicy` accepts a filter parameter structured like this:
+
+```json
+{
+    "p": ["", "domain1"],
+    "g": ["", "", "domain1"]
+}
+```
+
+### Who is responsible to create the DB?
+
+By convention, adapters should automatically create a `casbin` database if it doesn't exist and use it for policy storage. Reference implementation: [https://github.com/casbin/xorm-adapter](https://github.com/casbin/xorm-adapter)
+
+## Update Adapter
+
+The `UpdateAdapter` interface extends the basic `Adapter` interface to enable direct policy updates in storage. This approach is more efficient than the remove-and-add sequence when modifying existing rules.
+
+Adapters implementing `UpdateAdapter` provide these methods:
+
+| Method                   | Type     | Description                                                      |
+|--------------------------|----------|------------------------------------------------------------------|
+| UpdatePolicy()           | optional | Update a single policy rule in the storage                       |
+| UpdatePolicies()         | optional | Update multiple policy rules in the storage                      |
+| UpdateFilteredPolicies() | optional | Update policy rules that match the filter in the storage         |
+
+### Example
+
+Update adapter usage:
+
+```go
+import (
+    "github.com/casbin/casbin/v3"
+    "github.com/casbin/gorm-adapter/v3"
+)
+
+a, _ := gormadapter.NewAdapter("mysql", "root:@tcp(127.0.0.1:3306)/")
+e, _ := casbin.NewEnforcer("examples/rbac_model.conf", a)
+
+// Update a single policy
+// Change: p, alice, data1, read -> p, alice, data1, write
+e.UpdatePolicy(
+    []string{"alice", "data1", "read"},
+    []string{"alice", "data1", "write"},
+)
+
+// Update multiple policies at once
+e.UpdatePolicies(
+    [][]string{{"alice", "data1", "write"}, {"bob", "data2", "read"}},
+    [][]string{{"alice", "data1", "read"}, {"bob", "data2", "write"}},
+)
+
+// Update all policies matching a filter
+e.UpdateFilteredPolicies(
+    [][]string{{"alice", "data1", "write"}},
+    0,
+    "alice", "data1", "read",
+)
+```
+
+### How to write an update adapter
+
+To implement `UpdateAdapter`, add the update methods to your basic `Adapter` implementation:
+
+```go
+// UpdatePolicy updates a policy rule from storage.
+// This is part of the UpdateAdapter interface.
+func (a *Adapter) UpdatePolicy(sec string, ptype string, oldRule, newRule []string) error {
+    // Update the policy in storage
+    // SQL example: UPDATE casbin_rule SET v0=?, v1=?, v2=? WHERE ptype=? AND v0=? AND v1=? AND v2=?
+    return nil
+}
+
+// UpdatePolicies updates multiple policy rules in the storage.
+// This is part of the UpdateAdapter interface.
+func (a *Adapter) UpdatePolicies(sec string, ptype string, oldRules, newRules [][]string) error {
+    // Update multiple policies in storage
+    // Use transactions for consistency
+    return nil
+}
+
+// UpdateFilteredPolicies updates policy rules that match the filter from the storage.
+// This is part of the UpdateAdapter interface.
+func (a *Adapter) UpdateFilteredPolicies(sec string, ptype string, newRules [][]string, fieldIndex int, fieldValues ...string) error {
+    // Find policies matching the filter, then update them
+    return nil
+}
+```
+
+:::note
+
+Without `UpdateAdapter` support, Casbin automatically falls back to combining `RemovePolicy()` and `AddPolicy()` operations.
+
+:::
+
+## Context Adapter
+
+[ContextAdapter](https://github.com/casbin/casbin/blob/master/persist/adapter_context.go) provides context-aware operations for Casbin adapters.
+
+Context enables features like timeout control for adapter API calls.
+
+### Example
+
+[gormadapter](https://github.com/casbin/gorm-adapter) supports context. Below is timeout control using context:
+
+```go
+ca, _ := NewContextAdapter("mysql", "root:@tcp(127.0.0.1:3306)/", "casbin")
+// Set 300s timeout
+ctx, cancel := context.WithTimeout(context.Background(), 300*time.Microsecond)
+defer cancel()
+
+err := ca.AddPolicyCtx(ctx, "p", "p", []string{"alice", "data1", "read"})
+if err != nil {
+    panic(err)
+}
+```
+
+### How to write an context adapter
+
+`ContextAdapter` API adds a context processing layer on top of standard `Adapter` API. After implementing the standard Adapter API, wrap your logic with context handling.
+
+Reference implementation: [adapter.go](https://github.com/casbin/gorm-adapter/blob/master/adapter.go)
+
+## Transaction
+
+Casbin supports transactions. Transaction usage in `gormadapter`:
+
+```go
+db, _ := gorm.Open(...)
+adapter, _ := gormadapter.NewTransactionalAdapterByDB(db)
+e, _ := casbin.NewTransactionalEnforcer("examples/rbac_model.conf", adapter)
+
+ctx := context.Background()
+
+// WithTransaction executes a function within a transaction.
+// Errors trigger rollback; otherwise, automatic commit occurs.
+err := e.WithTransaction(ctx, func(tx *casbin.Transaction) error {
+    tx.AddPolicy("alice", "data1", "read")
+    tx.AddPolicy("alice", "data1", "write")
+    return nil
+})
+
+// Manual transaction handling
+tx, _ := e.BeginTransaction(ctx)
+tx.AddPolicy("alice", "data1", "write")
+if err := tx.Commit(); err != nil {
+    // handle transaction failure
+}
+```
+
+Implement `TransactionalAdapter` and `TransactionContext` from [persist/transaction.go](https://github.com/casbin/casbin/blob/master/persist/transaction.go) to add transaction support.
+
+Reference: [adapter.go](https://github.com/casbin/gorm-adapter/blob/master/adapter.go)

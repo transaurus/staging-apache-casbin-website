@@ -1,0 +1,66 @@
+---
+id: effector
+title: Effector
+description: The Effector interface in Casbin
+keywords: [effector, Effect, MergeEffects]
+authors: [ErikQQY]
+---
+
+The **Effect** is the outcome of a policy rule (allow or deny). The **Effector** interface defines how the enforcer combines multiple matching effects into a single decision.
+
+## MergeEffects()
+
+`MergeEffects()` takes all effects from matched policies and produces one final allow/deny result.
+
+```mdx-code-block
+<Tabs groupId="langs">
+<TabItem value="Go" label="Go" default>
+```
+
+```go
+Effect, explainIndex, err = e.MergeEffects(expr, effects, matches, policyIndex, policyLength)
+```
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+Parameters:
+
+| Parameter      | Description |
+|----------------|-------------|
+| `expr`         | Policy effect expression string (e.g. from the model). |
+| `effects`      | Slice of effects: `Allow`, `Deny`, or `Indeterminate`. |
+| `matches`      | Which policy indices matched. |
+| `policyIndex`  | Current policy index. |
+| `policyLength` | Total number of policies. |
+
+Return values:
+
+- **Effect** — Final decision (`Allow`, `Deny`, or `Indeterminate`).
+- **explainIndex** — Index of the policy that determined the result (`-1` if not applicable).
+- **err** — Non-nil if the effector does not support the expression.
+
+Using a custom `Effector`:
+
+```mdx-code-block
+<Tabs groupId="langs">
+<TabItem value="Go" label="Go" default>
+```
+
+```go
+var e Effector
+Effect, explainIndex, err = e.MergeEffects(expr, effects, matches, policyIndex, policyLength)
+```
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+For the standard allow-override effect, the result is allow if any matched policy allows and none deny. Custom effectors implement other semantics (e.g. deny-override, priority).
+
+:::note
+Unless the effect expression is `priority(p_eft) || deny`, the enforcer may short-circuit: once the result is determined, remaining policies are not evaluated. So when `policyIndex < policyLength-1`, some effects may be skipped.
+:::

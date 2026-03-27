@@ -1,0 +1,70 @@
+---
+id: overview
+title: Overview
+description: Casbin Overview
+keywords: [overview, supported languages]
+authors: [hsluoyz]
+---
+
+Casbin is an efficient, open-source access control library that enforces authorization and supports multiple [access control models](https://en.wikipedia.org/wiki/Access_control#Access_control_models).
+
+Implementing rule-based access control is straightforward: define subjects, objects, and permitted actions in a **_policy_** file in any format that fits your needs. This pattern is consistent across all Casbin implementations. The **_model_** file gives developers and administrators full control over authorization logic—layout, execution flow, and conditions. The **_Enforcer_** component evaluates incoming requests against your model and policy.
+
+## Languages Supported by Casbin
+
+Casbin provides native support for multiple programming languages so you can integrate it into a wide range of projects and workflows:
+
+| [![golang](/img/langs/golang.png)](https://github.com/casbin/casbin) | [![java](/img/langs/java.png)](https://github.com/casbin/jcasbin) | [![nodejs](/img/langs/nodejs.png)](https://github.com/casbin/node-casbin) | [![php](/img/langs/php.png)](https://github.com/php-casbin/php-casbin) |
+|----------------------------------------------------------------------|-------------------------------------------------------------------|---------------------------------------------------------------------------|------------------------------------------------------------------------|
+| [Casbin](https://github.com/casbin/casbin)                           | [jCasbin](https://github.com/casbin/jcasbin)                      | [node-Casbin](https://github.com/casbin/node-casbin)                      | [PHP-Casbin](https://github.com/php-casbin/php-casbin)                 |
+| Production-ready                                                     | Production-ready                                                  | Production-ready                                                          | Production-ready                                                       |
+
+| [![python](/img/langs/python.png)](https://github.com/casbin/pycasbin) | [![dotnet](/img/langs/dotnet.png)](https://github.com/casbin/Casbin.NET) | [![c++](/img/langs/cpp.png)](https://github.com/casbin/casbin-cpp) | [![rust](/img/langs/rust.png)](https://github.com/casbin/casbin-rs) |
+|------------------------------------------------------------------------|--------------------------------------------------------------------------|--------------------------------------------------------------------|---------------------------------------------------------------------|
+| [PyCasbin](https://github.com/casbin/pycasbin)                         | [Casbin.NET](https://github.com/casbin/Casbin.NET)                       | [Casbin-CPP](https://github.com/casbin/casbin-cpp)                 | [Casbin-RS](https://github.com/casbin/casbin-rs)                    |
+| Production-ready                                                       | Production-ready                                                         | Production-ready                                                   | Production-ready                                                    |
+
+### Feature Set by Language
+
+We aim for feature parity across all language implementations; complete uniformity is not yet achieved.
+
+Feature                 | Go   | Java | Node.js | PHP  | Python | C#   | Delphi | Rust | C++ | Lua  | Dart | Elixir
+:---                    | :--: | :--: | :--:    | :--: | :--:   | :--: | :--:   | :--: | :--:| :--: | :--: | :--:
+Enforcement             | ✅   | ✅    | ✅      | ✅   | ✅      | ✅   | ✅     | ✅    | ✅  | ✅   | ✅    | ✅
+RBAC                    | ✅   | ✅    | ✅      | ✅   | ✅      | ✅   | ✅     | ✅    | ✅  | ✅   | ✅    | ✅
+ABAC                    | ✅   | ✅    | ✅      | ✅   | ✅      | ✅   | ✅     | ✅    | ✅  | ✅   | ✅    | ✅
+Scaling ABAC (`eval()`) | ✅   | ✅    | ✅      | ✅   | ✅      | ✅   | ❌     | ✅    | ✅  | ✅   | ✅    | ✅
+Adapter                 | ✅   | ✅    | ✅      | ✅   | ✅      | ✅   | ✅     | ✅    | ✅  | ✅   | ✅    | ❌
+Management API          | ✅   | ✅    | ✅      | ✅   | ✅      | ✅   | ✅     | ✅    | ✅  | ✅   | ✅    | ✅
+RBAC API                | ✅   | ✅    | ✅      | ✅   | ✅      | ✅   | ✅     | ✅    | ✅  | ✅   | ✅    | ✅
+Batch API               | ✅   | ✅    | ✅      | ✅   | ✅      | ✅   | ❌     | ✅    | ✅  | ✅   | ❌    | ❌
+Filtered Adapter        | ✅   | ✅    | ✅      | ✅   | ✅      | ✅   | ❌     | ✅    | ✅  | ✅   | ❌    | ❌
+Watcher                 | ✅   | ✅    | ✅      | ✅   | ✅      | ✅   | ✅     | ✅    | ✅  | ✅   | ❌    | ❌
+Role Manager            | ✅   | ✅    | ✅      | ✅   | ✅      | ✅   | ❌     | ✅    | ✅  | ✅   | ✅    | ❌
+Multi-Threading         | ✅   | ✅    | ✅      | ❌   | ✅      | ❌   | ❌     | ✅    | ❌  | ❌   | ❌    | ❌
+'in' of matcher         | ✅   | ✅    | ✅      | ✅   | ✅      | ❌   | ✅     | ❌    | ❌  | ❌   | ✅    | ✅
+
+:::note
+A checkmark (✅) for Watcher or Role Manager means the interface exists in the core library; it does not guarantee that an implementation is available for that language.
+:::
+
+## What is Casbin?
+
+Casbin is an authorization library for applications that need controlled access to resources. Typically, a **subject** (user or service) requests access to an **object** (resource or entity) to perform an **action** (e.g. _read_, _write_, or _delete_). You define these actions to match your application. This is the standard `{ subject, object, action }` flow that Casbin handles most often.
+
+Casbin also supports more complex scenarios through [roles (RBAC)](/docs/rbac), [attributes (ABAC)](/docs/abac), and other patterns.
+
+### What Casbin Does
+
+1. **Enforces policy** in the classic `{ subject, object, action }` format or any custom format you define, including both allow and deny.
+2. **Manages storage** for the access control model and policies.
+3. **Handles user–role and role–role relationships** (RBAC role hierarchy).
+4. **Supports built-in superusers** (e.g. `root`, `administrator`) with unrestricted access without explicit rules.
+5. **Provides built-in operators** for pattern matching (e.g. `keyMatch` matches `/foo/bar` against `/foo*`).
+
+### What Casbin Does Not Do
+
+1. **User authentication** — validating usernames and passwords at login.
+2. **User or role list management** — maintaining the list of users or roles.
+
+Most applications already manage users, roles, and credentials. Casbin focuses only on authorization and does not store or verify passwords. In RBAC mode, it does maintain user–role associations.

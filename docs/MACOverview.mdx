@@ -1,0 +1,33 @@
+---
+id: mac-overview
+title: MAC Overview
+description: Mandatory Access Control (MAC) Overview
+keywords: [MAC, mandatory access control, overview, security model]
+authors: [hsluoyz]
+---
+
+## Overview
+
+**Mandatory Access Control (MAC)** means the system enforces access rules that users cannot bypass. Policy is central and uniform; access is determined by **labels** (e.g. clearance, classification) rather than by user choice.
+
+## MAC models in Casbin
+
+Casbin provides:
+
+- **[BLP](/docs/blp)** — Confidentiality: “no read up, no write down”
+- **[Biba](/docs/biba)** — Integrity: “no read down, no write up”
+- **[LBAC](/docs/lbac)** — Lattice-based: both confidentiality and integrity in one model
+
+## Shared properties
+
+- **Central policy** — Rules are system-wide, not per user.
+- **Labels** — Subjects and objects have security/integrity levels.
+- **Formal rules** — Each model encodes specific guarantees (e.g. no information flow upward in BLP).
+
+## When to use MAC
+
+- Government, military, or regulated environments with classification levels
+- Systems where data integrity is as important as confidentiality
+- Multi-level security (MLS) deployments
+
+See the linked pages for each model’s syntax and examples.

@@ -1,0 +1,70 @@
+---
+id: role-managers
+title: Role Managers
+description: The role manager is used to manage the RBAC role hierarchy in Casbin.
+keywords: [role manager, RBAC, Casbin]
+authors: [hsluoyz]
+---
+
+The **role manager** implements the RBAC role hierarchy (who has which role, and role inheritance). Casbin can use the default in-memory role manager (backed by policy) or plug in external sources (e.g. LDAP, Okta, Auth0, Azure AD). Custom role managers live in separate packages. List of available role managers by language:
+
+```mdx-code-block
+<Tabs groupId="langs">
+<TabItem value="Go" label="Go" default>
+
+import {RoleManagerGoData} from "@site/src/tableData/RoleManagerData/RoleManagerGoData";
+import {RoleManagerJavaData} from "@site/src/tableData/RoleManagerData/RoleManagerJavaData"; import RoleManagerMDTable
+  from "@site/src/tableData/RoleManagerData/RoleManagerMDTable";
+import {RoleManagerNodejsData} from "@site/src/tableData/RoleManagerData/RoleManagerNodejsData";
+import {RoleManagerPhpData} from "@site/src/tableData/RoleManagerData/RoleManagerPhpData";
+import {RoleManagerPythonData} from "@site/src/tableData/RoleManagerData/RoleManagerPythonData";
+
+<RoleManagerMDTable data={RoleManagerGoData}></RoleManagerMDTable>
+```
+
+All role managers must implement the [RoleManager](https://github.com/casbin/casbin/blob/master/rbac/role_manager.go) interface. Use the [Session Role Manager](https://github.com/casbin/session-role-manager) as a reference implementation.
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Java" label="Java">
+
+<RoleManagerMDTable data={RoleManagerJavaData}></RoleManagerMDTable>
+```
+
+All role managers must implement the [RoleManager](https://github.com/casbin/jcasbin/blob/master/src/main/java/org/casbin/jcasbin/rbac/RoleManager.java) interface. Use the [Default Role Manager](https://github.com/casbin/jcasbin/blob/master/src/main/java/org/casbin/jcasbin/rbac/DefaultRoleManager.java) as a reference implementation.
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Node.js" label="Node.js">
+
+<RoleManagerMDTable data={RoleManagerNodejsData}></RoleManagerMDTable>
+```
+
+All role managers must implement the [RoleManager](https://github.com/casbin/node-casbin/blob/master/src/rbac/roleManager.ts) interface. Use the [Default Role Manager](https://github.com/casbin/node-casbin/blob/master/src/rbac/defaultRoleManager.ts) as a reference implementation.
+
+```mdx-code-block
+</TabItem>
+<TabItem value="PHP" label="PHP">
+
+<RoleManagerMDTable data={RoleManagerPhpData}></RoleManagerMDTable>
+```
+
+All role managers must implement the [RoleManager](https://github.com/php-casbin/php-casbin/blob/master/src/Rbac/RoleManager.php) interface. Use the [Default Role Manager](https://github.com/php-casbin/php-casbin/blob/master/src/Rbac/DefaultRoleManager/RoleManager.php) as a reference implementation.
+
+```mdx-code-block
+</TabItem>
+<TabItem value="Python" label="Python">
+
+<RoleManagerMDTable data={RoleManagerPythonData}></RoleManagerMDTable>
+```
+
+All role managers must implement the [RoleManager](https://github.com/casbin/pycasbin/blob/master/casbin/rbac/role_manager.py) interface. Use the [Default Role Manager](https://github.com/casbin/pycasbin/blob/master/casbin/rbac/default_role_manager/role_manager.py) as a reference implementation.
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+## API
+
+See the [API](/docs/rolemanager-api) section for details.

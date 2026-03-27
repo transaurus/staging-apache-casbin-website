@@ -1,0 +1,58 @@
+---
+id: rebac
+title: ReBAC
+description: ReBAC based on Casbin
+keywords: [ReBAC, ReBAC model]
+authors: [D0000M]
+---
+## What is ReBAC?
+
+**ReBAC (Relationship-Based Access Control)** bases authorization on **relationships** between entities (user–resource, resource–type, etc.), not only on roles or attributes. It fits systems with rich relationship graphs: social networks, collaboration tools, multi-tenant apps.
+
+Typical questions ReBAC answers:
+
+- Is the user the **owner** of the resource?
+- Is the user a **member** of the project that owns the resource?
+- Does the resource **belong to a type** the user has access to?
+
+Relationships are often modeled as graphs or paths.
+
+## ReBAC in Casbin
+
+Casbin models ReBAC with:
+
+- **User–resource–role** relationships: “user U has role R on resource O” (e.g. `alice` is `collaborator` on `doc1`).
+- **Resource–type** relationships: “resource O is of type T” (e.g. `doc1` is of type `doc`).
+
+Permissions are then “role R can do action A on type T”; a user gets permission if they have R on a resource that is of type T. Example model:
+
+```ini
+[request_definition]
+r = sub, obj, act
+
+[policy_definition]
+p = role, obj_type, act
+
+[role_definition]
+g = _, _, _
+g2 = _, _
+
+[policy_effect]
+e = some(where (p.eft == allow))
+
+[matchers]
+m = g(r.sub, r.obj, p.role) && g2(r.obj, p.obj_type) && r.act == p.act
+```
+
+```csv
+# Permission definition: The "collaborator" role can read files of type "doc"
+p, collaborator, doc, read
+
+# User-Resource-Role Relationship: alice is a collaborator of doc1
+g, alice, doc1, collaborator
+
+# Resource-Type Relationship: doc1 is of type "doc"
+g2, doc1, doc
+```
+
+So: the user must have the right **role on the resource** and the resource must match the **type** in the permission rule. Casbin combines `g` (user–resource–role), `g2` (resource–type), and `p` (role–type–action) to decide access.

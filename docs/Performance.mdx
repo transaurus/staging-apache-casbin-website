@@ -1,0 +1,26 @@
+---
+id: performance
+title: Performance Optimization
+description: Casbin performance optimization
+keywords: [optimization]
+authors: [hsluoyz]
+---
+
+At scale (many users or many rules), two common bottlenecks are **throughput** and **policy size**. Below are practical mitigations.
+
+### High request volume
+
+If one enforcer cannot keep up (e.g. 10k+ req/s):
+
+1. **Multi-threading** — Use [SyncedEnforcer](/docs/multi-threading) and run multiple worker threads/instances to use all cores.
+2. **Cluster** — Run multiple machines with Casbin and use [Watchers](/docs/watchers) to sync policy. You can combine both: e.g. 10 nodes × 5 threads each.
+
+### Large policy (many rules)
+
+With millions of rules, enforcement and load time can suffer:
+
+1. **Model and policy design** — Prefer RBAC and shared defaults so most tenants use a small rule set (e.g. &lt; 100 rules); override only where needed. See [GitHub #681](https://github.com/casbin/casbin/issues/681#issuecomment-763801583) for discussion.
+2. **Policy sharding** — Load only the rules each enforcer needs (e.g. per tenant or per domain) via [Policy subset loading](/docs/policy-subset-loading).
+3. **RBAC over direct user permissions** — Assign permissions to roles; Casbin caches the role tree for O(1) role lookups and fewer policy rules.
+
+Combine these where possible for best results.

@@ -1,0 +1,50 @@
+---
+id: dispatchers
+title: Dispatchers
+description: Dispatchers provide a way to synchronize incremental changes of policy.
+keywords: [dispatcher]
+authors: [dovics]
+---
+
+**Dispatchers** propagate **incremental** policy updates to multiple enforcer instances (e.g. a cluster). They use a consistency protocol (e.g. Raft) so all enforcers eventually see the same policy. Casbin’s normal API (AddPolicy, RemovePolicy, etc.) is unchanged; the dispatcher sends updates to other nodes.
+
+Two parts: (1) hooks inside Casbin that the dispatcher implements, and (2) dispatcher-specific setup (e.g. cluster membership, config).
+
+:::note
+Dispatchers only sync **changes** after init. They do **not** fix existing divergence. Start all enforcers with the same policy (e.g. from the same DB or snapshot) before enabling a dispatcher.
+:::
+
+Available dispatchers:
+
+```mdx-code-block
+<Tabs groupId="langs">
+<TabItem value="Go" label="Go" default>
+
+import DispatcherMDTable from "@site/src/tableData/DispatcherData/DispatcherMDTable";
+import {DispatcherGoData} from "@site/src/tableData/DispatcherData/DispatcherGoData";
+
+<DispatcherMDTable data={DispatcherGoData}></DispatcherMDTable>
+```
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
+
+### DistributedEnforcer
+
+`DistributedEnforcer` wraps `SyncedEnforcer` to work with dispatchers.
+
+```mdx-code-block
+<Tabs groupId="langs">
+<TabItem value="Go" label="Go" default>
+```
+
+```go
+    e, _ := casbin.NewDistributedEnforcer("examples/basic_model.conf", "examples/basic_policy.csv")
+```
+
+```mdx-code-block
+</TabItem>
+</Tabs>
+```
