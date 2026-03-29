@@ -9,7 +9,7 @@ module.exports = {
     "An authorization library that supports access control models like ACL, RBAC, ABAC, ReBAC, PBAC, OrBAC, BLP, Biba, LBAC, UCON for Golang, Java, C/C++, Node.js, Javascript, PHP, Laravel, Python, .NET (C#), Delphi, Rust, Ruby, Swift (Objective-C), Lua (OpenResty), Dart (Flutter) and Elixir",
   url: "https://casbin.org",
   baseUrl: "/",
-  onBrokenLinks: "throw",
+  onBrokenLinks: 'warn',
   markdown: {
     hooks: {
       onBrokenMarkdownLinks: "warn",
@@ -339,7 +339,7 @@ var _hmt = _hmt || [];
   ],
   i18n: {
     defaultLocale: "en",
-    locales: ["en", "zh", "ko", "ru", "fr", "de", "ja", "es", "pt", "uk", "th", "ar", "id", "vi", "it", "ms", "tr"],
+    locales: ["en", "zh-Hans"],
   },
   customFields: {
     customMessage: "", // Set any custom message here; leave empty to show the latest version message

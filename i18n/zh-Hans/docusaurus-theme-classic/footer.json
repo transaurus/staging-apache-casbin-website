@@ -1,0 +1,38 @@
+{
+  "link.title.Docs": {
+    "message": "Docs",
+    "description": "The title of the footer links column with title=Docs in the footer"
+  },
+  "link.title.Community": {
+    "message": "Community",
+    "description": "The title of the footer links column with title=Community in the footer"
+  },
+  "link.title.More": {
+    "message": "More",
+    "description": "The title of the footer links column with title=More in the footer"
+  },
+  "link.item.label.Getting Started": {
+    "message": "Getting Started",
+    "description": "The label of footer link with label=Getting Started linking to /docs/get-started"
+  },
+  "link.item.label.Management API": {
+    "message": "Management API",
+    "description": "The label of footer link with label=Management API linking to /docs/management-api"
+  },
+  "link.item.label.RBAC API": {
+    "message": "RBAC API",
+    "description": "The label of footer link with label=RBAC API linking to /docs/rbac-api"
+  },
+  "link.item.label.Middlewares": {
+    "message": "Middlewares",
+    "description": "The label of footer link with label=Middlewares linking to /docs/middlewares"
+  },
+  "copyright": {
+    "message": "Copyright © 2026 The Apache Software Foundation. Apache Casbin, Casbin, and the project logo are trademarks of The Apache Software Foundation.",
+    "description": "The footer copyright"
+  },
+  "logo.alt": {
+    "message": "Apache Software Foundation",
+    "description": "The alt text of footer logo"
+  }
+}

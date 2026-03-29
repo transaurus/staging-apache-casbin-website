@@ -1,0 +1,62 @@
+{
+  "title": {
+    "message": "Apache Casbin",
+    "description": "The title in the navbar"
+  },
+  "logo.alt": {
+    "message": "Casbin Logo",
+    "description": "The alt text of navbar logo"
+  },
+  "item.label.Docs": {
+    "message": "Docs",
+    "description": "Navbar item with label Docs"
+  },
+  "item.label.Plugins": {
+    "message": "Plugins",
+    "description": "Navbar item with label Plugins"
+  },
+  "item.label.Authorization Models": {
+    "message": "Authorization Models",
+    "description": "Navbar item with label Authorization Models"
+  },
+  "item.label.GUI Policy Editor": {
+    "message": "GUI Policy Editor",
+    "description": "Navbar item with label GUI Policy Editor"
+  },
+  "item.label.Blog": {
+    "message": "Blog",
+    "description": "Navbar item with label Blog"
+  },
+  "item.label.Help": {
+    "message": "Help",
+    "description": "Navbar item with label Help"
+  },
+  "item.label.Get Started": {
+    "message": "Get Started",
+    "description": "Navbar item with label Get Started"
+  },
+  "item.label.Model": {
+    "message": "Model",
+    "description": "Navbar item with label Model"
+  },
+  "item.label.Storage": {
+    "message": "Storage",
+    "description": "Navbar item with label Storage"
+  },
+  "item.label.Adapters": {
+    "message": "Adapters",
+    "description": "Navbar item with label Adapters"
+  },
+  "item.label.API": {
+    "message": "API",
+    "description": "Navbar item with label API"
+  },
+  "item.label.IDE plugins": {
+    "message": "IDE plugins",
+    "description": "Navbar item with label IDE plugins"
+  },
+  "item.label.Start Contributing": {
+    "message": "Start Contributing",
+    "description": "Navbar item with label Start Contributing"
+  }
+}
